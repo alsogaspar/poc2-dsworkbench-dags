@@ -11,7 +11,7 @@ def create_content(**context):
     context['ti'].xcom_push(key='file_content', value=content)
 
 def upload_to_s3(**context):
-    bucket_name = os.getenv("BUCKET_NAME")
+    bucket_name = os.getenv("AWS_REMOTE_BUCKET")
     content = context['ti'].xcom_pull(key='file_content')
     s3 = S3Hook(aws_conn_id='minio_conn')
     s3.load_string(
