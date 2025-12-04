@@ -21,11 +21,12 @@ with DAG(
     # Step 2: Upload the file to S3/MinIO
     upload_file = LocalFilesystemToS3Operator(
         task_id="upload_file",
-        filename="/tmp/hello.txt",  # Local file path
-        key="uploads/hello.txt",    # Path inside the bucket
-        bucket_name="datascience-rqwrwzb9",  # Your bucket name
-        aws_conn_id="minio_conn"    # Airflow connection for MinIO
+        filename="/tmp/hello.txt",       # Local file path
+        dest_key="uploads/hello.txt",    # Object key in bucket
+        dest_bucket="datascience-rqwrwzb9",  # Bucket name
+        aws_conn_id="minio_conn"         # Airflow connection for MinIO
     )
+
 
     # Task dependency
     create_file >> upload_file
