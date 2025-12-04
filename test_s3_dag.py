@@ -6,15 +6,18 @@ from datetime import datetime
 
 def create_content(**context):
     content = "Hello from Airflow!"
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    content = f"{content}\n{timestamp}"
     context['ti'].xcom_push(key='file_content', value=content)
 
 def upload_to_s3(**context):
+    bucket_name = os.getenv("BUCKET_NAME")
     content = context['ti'].xcom_pull(key='file_content')
     s3 = S3Hook(aws_conn_id='minio_conn')
     s3.load_string(
         string_data=content,
         key='uploads/hello.txt',
-        bucket_name='datascience-rqwrwzb9',
+        bucket_name=bucket_name,
         replace=True
     )
 
