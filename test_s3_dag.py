@@ -1,32 +1,38 @@
 
 from airflow import DAG
-from airflow.operators.bash import BashOperator
-from airflow.providers.amazon.aws.transfers.local_to_s3 import LocalFilesystemToS3Operator
+from airflow.operators.python import PythonOperator
+from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 from datetime import datetime
 
-# DAG definition
+def create_content(**context):
+    content = "Hello from Airflow!"
+    context['ti'].xcom_push(key='file_content', value=content)
+
+def upload_to_s3(**context):
+    content = context['ti'].xcom_pull(key='file_content')
+    s3 = S3Hook(aws_conn_id='minio_conn')
+    s3.load_string(
+        string_data=content,
+        key='uploads/hello.txt',
+        bucket_name='datascience-rqwrwzb9',
+        replace=True
+    )
+
 with DAG(
-    dag_id="create_and_upload_to_s3",
+    dag_id="create_and_upload_to_s3_xcom",
     start_date=datetime(2024, 1, 1),
     schedule="@once",
     catchup=False,
 ) as dag:
 
-    # Step 1: Create a sample file
-    create_file = BashOperator(
+    create_file = PythonOperator(
         task_id="create_file",
-        bash_command="echo 'Hello from Airflow!' > /tmp/hello.txt"
+        python_callable=create_content
     )
 
-    # Step 2: Upload the file to S3/MinIO
-    upload_file = LocalFilesystemToS3Operator(
+    upload_file = PythonOperator(
         task_id="upload_file",
-        filename="/tmp/hello.txt",       # Local file path
-        dest_key="uploads/hello.txt",    # Object key in bucket
-        dest_bucket="datascience-rqwrwzb9",  # Bucket name
-        aws_conn_id="minio_conn"         # Airflow connection for MinIO
+        python_callable=upload_to_s3
     )
 
-
-    # Task dependency
     create_file >> upload_file
