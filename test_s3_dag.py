@@ -1,7 +1,7 @@
 
 from airflow import DAG
 from airflow.operators.bash import BashOperator
-from airflow.providers.amazon.aws.transfers.local_to_s3 import LocalToS3Operator
+from airflow.providers.amazon.aws.transfers.local_to_s3 import LocalFilesystemToS3Operator
 from datetime import datetime
 
 # DAG definition
@@ -23,7 +23,7 @@ with DAG(
         task_id="upload_file",
         filename="/tmp/hello.txt",  # Local file path
         key="uploads/hello.txt",    # Path inside the bucket
-        bucket_name="datascience-vtgn22wv",  # Your bucket name
+        bucket_name="datascience-rqwrwzb9",  # Your bucket name
         aws_conn_id="minio_conn"    # Airflow connection for MinIO
     )
 
