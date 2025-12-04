@@ -19,7 +19,7 @@ with DAG(
     )
 
     # Step 2: Upload the file to S3/MinIO
-    upload_file = LocalToS3Operator(
+    upload_file = LocalFilesystemToS3Operator(
         task_id="upload_file",
         filename="/tmp/hello.txt",  # Local file path
         key="uploads/hello.txt",    # Path inside the bucket
