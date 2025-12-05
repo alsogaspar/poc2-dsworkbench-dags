@@ -13,7 +13,7 @@ def create_content(**context):
 def upload_to_s3(**context):
     bucket_name = os.getenv("AWS_REMOTE_BUCKET")
     content = context['ti'].xcom_pull(key='file_content')
-    s3 = S3Hook(aws_conn_id='minio_conn1')
+    s3 = S3Hook(aws_conn_id='minio_conn')
     s3.load_string(
         string_data=content,
         key='uploads/hello.txt',
