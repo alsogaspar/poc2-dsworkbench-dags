@@ -16,7 +16,7 @@ def upload_to_s3(**context):
     s3 = S3Hook(aws_conn_id='minio_conn')
     s3.load_string(
         string_data=content,
-        key='uploads/hello-airflow.txt',
+        key='hello-airflow.txt',
         bucket_name=bucket_name,
         replace=True
     )
